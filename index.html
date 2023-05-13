@@ -1,30 +1,137 @@
 ---
-layout: templates/blank_page
+layout: templates/1
 max_deep_level: 1
 metadata:
+  is_homepage: true
   name: Home
   enabled: true
   file_type: page
-  last_edit: 1683750917400
-  is_homepage: true
-redirect_code: 301
-redirect_to: "/"
-redirect_url: "/"
-searchable: true
+  last_edit: 1683639905933
+  seo_searchable: false
+redirect_to: ''
+redirect_url: ''
 ---
+{% include 'modules/siteglide_system/constants' -%}
 
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
 
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>NPM + Vite + React + TS</title>
-  </head>
-  <body>
-    <div id="root"></div>
-    <script type="module" src="/src/main.tsx"></script>
-  </body>
-</html>
 
+
+<body>
+  <script type="module" src="/src/main.tsx"></script>
+
+
+<div id="root"></div>
+
+<!-- Liquid Form -->
+
+<div class="full-row py-5 bg-gray">
+  <div class="container">
+    <form class="font-12 formicon text-ordinary">
+      <div class="row g-3">
+        <div class="col-md-4 col-lg-2">
+          <div class="select-arrow">
+            <select class="form-control form-select bg-white border" name="status">
+              <option value="">Any Status</option>
+              <option value="For Rent">For Rent</option>
+              <option value="Short Term">Short Term</option>
+              <option value="Pending">Pending..</option>
+            </select>
+          </div>
+        </div>
+        <div class="col-md-8 col-lg-7">
+          <input
+            type="text"
+            class="form-control"
+            id="validationDefault03"
+            placeholder="Enter Address, Street and City or Enter State, Zip code">
+        </div>
+        <div class="col-md-4 col-lg-3">
+          <button
+            id="search-property"
+            type="submit"
+            class="btn btn-primary w-100">Search Property</button>
+        </div>
+        <div class="col-md-4 col-lg-2">
+          <div class="select-arrow">
+            <select
+              class="form-control form-select bg-white border"
+              name="propertyType"
+              id="selectPropertyType"
+              selected="{{propertyName}}">
+              <option value="">Any Type</option>
+
+              <!-- BEGIN  POPULATE DROPDOWN -->
+
+              {% graphql rental_categories = "get_rental_categories" %}
+              {% for this in rental_categories.records.results %}
+                <option value="{{ this.id  }}" name="{{this.properties.name}}">
+                  {{ this.properties.name }}</option>
+              {% endfor %}
+
+              <!-- END POPULATE DROPDOWN -->
+
+
+            </select>
+          </div>
+        </div>
+
+        <div class="col-md-4 col-lg-3">
+          <input
+            type="number"
+            class="form-control"
+            id="validationDefault04"
+            placeholder="Min Area (sqft)">
+        </div>
+        <div class="col-md-4 col-lg-3">
+          <input
+            type="number"
+            class="form-control"
+            id="validationDefault05"
+            placeholder="Max Area (sqft)">
+        </div>
+        <div class="col-md-8 col-lg-4">
+          <div class="price-range">
+            <div class="price-filter">
+              <span class="price-slider">
+                <input
+                  class="filter-price"
+                  type="text"
+                  name="price"
+                  value="1000;253000"
+                  style="display: none;"><span class="jslider jslider_plastic">
+                  <table>
+                    <tbody>
+                      <tr>
+                        <td>
+                          <div class="jslider-bg">
+                            <i class="l"></i>
+                            <i class="f"></i>
+                            <i class="r"></i>
+                            <i class="v" style="left: 0.1%; width: 25.2%;"></i>
+                          </div>
+                          <div class="jslider-pointer" style="left: 0.1%; z-index: 0;"></div>
+                          <div class="jslider-pointer jslider-pointer-to" style="left: 25.3%; z-index: 2;"></div>
+                          <div class="jslider-label" style="display: none;">
+                            <span>0</span>
+                          </div>
+                          <div class="jslider-label jslider-label-to" style="">
+                            <span>1000000</span>$</div>
+                          <div class="jslider-value" style="left: 0.1%; margin-left: -0.387594px; right: auto; visibility: visible;">
+                            <span>1000</span>$</div>
+                          <div class="jslider-value jslider-value-to" style="visibility: visible; left: 25.3%; margin-left: -30.7578px; right: auto;">
+                            <span>253000</span>$</div>
+                          <div class="jslider-scale"></div>
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </span>
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
 
