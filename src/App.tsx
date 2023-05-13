@@ -10,9 +10,9 @@ function App() {
     base: `"nav" "main"`,
     lg: `"nav nav" "aside main"`
   }}>
-      <GridItem area='nav'>Top Nav</GridItem>
+      <GridItem area='nav'></GridItem>
       <Show above='lg'>
-        <GridItem area='aside'>Aside</GridItem>
+        <GridItem area='aside'></GridItem>
       </Show>
       <GridItem area='main'>
         <ListingsList />
