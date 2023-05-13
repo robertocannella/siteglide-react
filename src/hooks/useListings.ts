@@ -5,8 +5,9 @@ import { useQuery } from '@tanstack/react-query';
 
 
 const useListings = () => {
+
     const fetchListings = () => 
-    axios 
+        axios
         .get('https://nuvolagraph.staging.oregon.platform-os.com/api/all-listings.json')
         .then (res => res.data.models.results as Listing[])
 
