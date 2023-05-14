@@ -23,6 +23,7 @@ export default interface Listing {
       twitter_type: null;
       webapp_field_3_1: string[];
       webapp_field_3_2: number;
+      webapp_field_3_3: number;
       weighting: number;
     };
 }

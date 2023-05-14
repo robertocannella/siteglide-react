@@ -1,150 +1,173 @@
 import Listing from '../models/Listing';
 import LoadingSpinner from './Spinner/LoadingSpinner';
 import useListings from '../hooks/useListings';
-import { useEffect, useState } from 'react';
-import { cookieStorageManager } from '@chakra-ui/react';
-
-
+import {useEffect, useState } from 'react';
+import { Box, Slider } from '@material-ui/core';
+import usePropertyTypes from '../hooks/usePropertyTypes';
 
 
 const ListingsList = () => {
+    const [data, setData] = useState<any[]>([]);
 
 
-    const [searchTerm, setSearchTerm] = useState('');
+   // const [propertyTypes, setPropertyTypes] = useState<any[]>([]);
+    const [status, setStatus] = useState<any[]>([]);
+    const [filters, setFilters] = useState({
+        searchTerm: '',
+        propertyType: '',
+        minPrice: 0,
+        maxPrice: Infinity,
+        status: '',
+        minSquareFootage: 0,
+        maxSquareFootage: Infinity,
+      });
     const {data: listings, error, isLoading} = useListings();
+    const {data: propertyTypes, error: errorPropertyTypes, isLoading: isLoadingPropertyTypes} = usePropertyTypes();
+    const [filterData, setFilteredData] = useState<Listing[]>([])
+    const [matValue, setMatValue] = useState<number[]>([0, 5000]);
 
-    const filteredData = listings?.filter(item =>{
-            if (searchTerm == '')
-                return listings
-            else 
-                return item.properties.category_array.includes(searchTerm)
-         }
 
-      );
-    const handleSelectInputChange = (e:any) =>{
-            setSearchTerm(e.target.value);
-    }
+    useEffect(()=>{
 
+        // This populates the Status Options Table (Needs GraphQL API Endpoint)
+        let allStatuses = new Set();
+        listings?.forEach(item => {
+            item.properties.webapp_field_3_1.forEach(status => {
+                allStatuses.add(status)
+            })
+
+        })
+        setStatus(Array.from(allStatuses));
+
+
+        // Sets the default filtered data
+        setFilteredData(listings!)
+        
+        fetchData();
+
+
+    },[listings, filters])
+
+    async function fetchData() {
+   
+    
+       // Filter the data based on the current filter state
+        const filteredData = listings?.filter((item:Listing) => {
+          return (
+            (item.properties.category_array[0] === filters.propertyType || filters.propertyType === '') &&
+            (item.properties.webapp_field_3_2 >= filters.minSquareFootage && item.properties.webapp_field_3_2 <= filters.maxSquareFootage) &&
+            (item.properties.webapp_field_3_3 >= filters.minPrice && item.properties.webapp_field_3_3 <= filters.maxPrice) &&
+            (item.properties.webapp_field_3_1.includes(filters.status) || filters.status === '') && 
+            (item.properties.address.includes(filters.searchTerm) || filters.searchTerm === '')
+          );
+        });
+        console.log(listings)
+        console.log(filteredData)
+    
+        setData(filteredData ? filteredData : []);
+      }
+ 
     if (error) return <p>{error.message}</p>;
 
     if (isLoading) return <><LoadingSpinner/></>
-    
     return (
         <>
 
-<div className="full-row py-5 bg-gray">
-  <div className="container">
-    <form className="font-12 formicon text-ordinary">
-      <div className="row g-3">
-        <div className="col-md-4 col-lg-2">
-          <div className="select-arrow">
-            <select className="form-control form-select bg-white border" name="status">
-              <option value="">Any Status</option>
-              <option value="For Rent">For Rent</option>
-              <option value="Short Term">Short Term</option>
-              <option value="Pending">Pending..</option>
-            </select>
-          </div>
-        </div>
-        <div className="col-md-8 col-lg-7">
-          <input
-            type="text"
-            className="form-control"
-            id="validationDefault03"
-            placeholder="Enter Address, Street and City or Enter State, Zip code"/>
-        </div>
+                <div className="full-row py-5 bg-gray">
+                <div className="container">
+                    <form className="font-12 formicon text-ordinary">
+                    <div className="row g-3">
+                        <div className="col-md-4 col-lg-2">
+                        <div className="select-arrow">
+                            <select 
+                            className="form-control form-select bg-white border" 
+                            name="status"
+                            onChange={(event) => setFilters((prevFilters) => ({...prevFilters, status: event.target.value}))}
+                            >
+                            <option value="">All</option>
+                                {status.map((item, index )=>{
+                                    return (
+                                        <option key={index} value={item}>{item}</option>
+                                    )
+                                })}
+                            </select>
+                        </div>
+                        </div>
+                        <div className="col-md-8 col-lg-7">
+                        <input
+                            type="text"
+                            className="form-control"
+                            id="validationDefault03"
+                            placeholder="Enter Address, Street and City or Enter State, Zip code"
+                            onChange={(event)=>setFilters((prevFilters) => ({...prevFilters, searchTerm: event.target.value }))}
+                            
+                            />
+                        </div>
 
-        <div className="select-arrow">
-            <select 
-                className="form-control form-select bg-white border" 
-                name="propertyType" 
-                id="selectPropertyType"
-                onChange={handleSelectInputChange}
-                >
-              <option value="">Any Type</option>
-                <option value="171" >
-                  Single Family</option>
-              
-                <option value="172" >
-                  Town House</option>
-              
-                <option value="173">
-                  Condo</option>
-              
-                <option value="175">
-                  Penthouse</option>
-              
-                <option value="174">
-                  Apartment</option>
-            </select>
-          </div>
+                        <div className="select-arrow">
+                            <select 
+                                className="form-control form-select bg-white border" 
+                                name="propertyType" 
+                                id="selectPropertyType"
+                                onChange={(event) => setFilters((prevFilters) => ({...prevFilters, propertyType: event.target.value}))}
+                                >
 
-        <div className="col-md-4 col-lg-3">
-          <input
-            type="number"
-            className="form-control"
-            id="validationDefault04"
-            placeholder="Min Area (sqft)"/>
-        </div>
-        <div className="col-md-4 col-lg-3">
-          <input
-            type="number"
-            className="form-control"
-            id="validationDefault05"
-            placeholder="Max Area (sqft)"/>
-        </div>
-        <div className="col-md-8 col-lg-4">
-          <div className="price-range">
-            <div className="price-filter">
-              <span className="price-slider">
-                <input
-                  className="filter-price"
-                  type="text"
-                  name="price"
-                  value="1000;253000"
-                  style={{display: "none"}}/><span className="jslider jslider_plastic">
-                  <table>
-                    <tbody>
-                      <tr>
-                        <td>
-                          <div className="jslider-bg">
-                            <i className="l"></i>
-                            <i className="f"></i>
-                            <i className="r"></i>
-                            <i className="v" style={{left: '0.1%', width: '25.2%'}}></i>
-                          </div>
-                          <div className="jslider-pointer" style={{left: '0.1%', zIndex: '0'}}></div>
-                          <div className="jslider-pointer jslider-pointer-to" style={{left: '25.3%', zIndex: 2}}></div>
-                          <div className="jslider-label" style={{display: 'none'}}>
-                            <span>0</span>
-                          </div>
-                          <div className="jslider-label jslider-label-to">
-                            <span>1000000</span>$</div>
-                          <div className="jslider-value" style={{left: '0.1%', marginLeft: '-0.387594px', right: 'auto', visibility: 'visible'}}>
-                            <span>1000</span>$</div>
-                          <div className="jslider-value jslider-value-to" style={{visibility: 'visible', left: '25.3%', marginLeft: '-30.7578px', right: 'auto'}}>
-                            <span>253000</span>$</div>
-                          <div className="jslider-scale"></div>
-                        </td>
-                      </tr>
-                    </tbody>
-                  </table>
-                </span>
-              </span>
-            </div>
-          </div>
-        </div>
-      </div>
-    </form>
-  </div>
-</div>
+                            <option value="">All</option>
+        
+                                {propertyTypes?.map(item =>{
+                                    return (
+                                        <option key={item.id} value={item.id}>{item.properties.name}</option>
+                                    )
+                                })}
+                            </select>
+                        </div>
+                        <Box sizeWidth={300} >
+                            Price Range
+                                <Slider
+                                    
+                                    getAriaLabel={() => 'Price range'}
+                                    value={matValue}
+                                    onChange={(event, value:any) => {setFilters((prevFilters) => ({...prevFilters, minPrice: value[0], maxPrice: value[1] })); setMatValue(value as number[])}}
+                                    valueLabelDisplay="auto"
+                                    getAriaValueText={undefined}
+                                    step={100}
+                                    min={0}
+                                    max={5000}
+                                />
+                        </Box>
 
-          
+
+                        <div className="col-md-4 col-lg-3">
+                            <input
+                                type="number"
+                                className="form-control"
+                                id="validationDefault04"
+                                placeholder="Min Area (sqft)"
+                                onChange={(event) => setFilters((prevFilters) => ({...prevFilters, minSquareFootage: parseInt(event.target.value)}))}
+
+                                />
+                            </div>
+                        <div className="col-md-4 col-lg-3">
+                            <input
+                                type="number"
+                                className="form-control"
+                                id="validationDefault05"
+                                placeholder="Max Area (sqft)"
+                                onChange={(event) => setFilters((prevFilters) => ({...prevFilters, maxSquareFootage: parseInt(event.target.value)}))}
+                                />
+                            </div>
+        
+                    </div>
+                    </form>
+                </div>
+                </div>
+
+          <h1>Results</h1>
 
             <ul className="list-group">
-            {filteredData?.map((listing: Listing) => (
+            {data?.map((listing: Listing) => (
                 <li key={listing.id} className="list-group-item">
-                {listing.properties.address}
+                {listing.properties.address}  | {listing.properties.category_array[0]} | {/* PRICE RANGE */} ${listing.properties.webapp_field_3_3} | {/* Square Footage */}{listing.properties.webapp_field_3_2}ft | {listing.properties.webapp_field_3_1.map(item=><span> "{item}" </span>)}
                 </li>
             ))}
         </ul>
