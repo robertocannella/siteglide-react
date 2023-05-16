@@ -2,8 +2,10 @@ import Listing from '../models/Listing';
 import LoadingSpinner from './Spinner/LoadingSpinner';
 import useListings from '../hooks/useListings';
 import {useEffect, useState } from 'react';
-import { Box, Slider } from '@material-ui/core';
+import { Box, BoxProps, Paper, Slider } from '@material-ui/core';
 import usePropertyTypes from '../hooks/usePropertyTypes';
+
+
 
 
 const ListingsList = () => {
@@ -58,11 +60,10 @@ const ListingsList = () => {
             (item.properties.webapp_field_3_2 >= filters.minSquareFootage && item.properties.webapp_field_3_2 <= filters.maxSquareFootage) &&
             (item.properties.webapp_field_3_3 >= filters.minPrice && item.properties.webapp_field_3_3 <= filters.maxPrice) &&
             (item.properties.webapp_field_3_1.includes(filters.status) || filters.status === '') && 
-            (item.properties.address.includes(filters.searchTerm) || filters.searchTerm === '')
+            (item.properties.address.toLowerCase().includes(filters.searchTerm.toLowerCase()) || filters.searchTerm === '')
           );
         });
-        console.log(listings)
-        console.log(filteredData)
+
     
         setData(filteredData ? filteredData : []);
       }
@@ -84,7 +85,7 @@ const ListingsList = () => {
                             name="status"
                             onChange={(event) => setFilters((prevFilters) => ({...prevFilters, status: event.target.value}))}
                             >
-                            <option value="">All</option>
+                            <option value="">Any Status</option>
                                 {status.map((item, index )=>{
                                     return (
                                         <option key={index} value={item}>{item}</option>
@@ -112,7 +113,7 @@ const ListingsList = () => {
                                 onChange={(event) => setFilters((prevFilters) => ({...prevFilters, propertyType: event.target.value}))}
                                 >
 
-                            <option value="">All</option>
+                            <option value="">Any Type</option>
         
                                 {propertyTypes?.map(item =>{
                                     return (
@@ -121,8 +122,9 @@ const ListingsList = () => {
                                 })}
                             </select>
                         </div>
-                        <Box sizeWidth={300} >
-                            Price Range
+                        <hr></hr>
+                        <Box style={{ width: '200px' }} >
+                            <p>Price Range</p>
                                 <Slider
                                     
                                     getAriaLabel={() => 'Price range'}
@@ -136,7 +138,9 @@ const ListingsList = () => {
                                 />
                         </Box>
 
-
+                        <hr></hr>
+                        <p>Square Ft</p>
+                     
                         <div className="col-md-4 col-lg-3">
                             <input
                                 type="number"
@@ -156,7 +160,7 @@ const ListingsList = () => {
                                 onChange={(event) => setFilters((prevFilters) => ({...prevFilters, maxSquareFootage: parseInt(event.target.value)}))}
                                 />
                             </div>
-        
+               
                     </div>
                     </form>
                 </div>
@@ -165,9 +169,10 @@ const ListingsList = () => {
           <h1>Results</h1>
 
             <ul className="list-group">
+            {!data.length ? <div>No Results</div> : <div></div>}
             {data?.map((listing: Listing) => (
                 <li key={listing.id} className="list-group-item">
-                {listing.properties.address}  | {listing.properties.category_array[0]} | {/* PRICE RANGE */} ${listing.properties.webapp_field_3_3} | {/* Square Footage */}{listing.properties.webapp_field_3_2}ft | {listing.properties.webapp_field_3_1.map(item=><span> "{item}" </span>)}
+                {listing.properties.address}  | {/* Type */} {/*listing.properties.category_array[0] /*} | {/* PRICE RANGE */} ${listing.properties.webapp_field_3_3} | {/* Square Footage */}{listing.properties.webapp_field_3_2}ft | {/* Status */} Status: {listing.properties.webapp_field_3_1.map(item=><span> "{item}" </span>)}
                 </li>
             ))}
         </ul>

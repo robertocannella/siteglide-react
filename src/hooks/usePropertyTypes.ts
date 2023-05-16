@@ -9,7 +9,7 @@ const usePropertyTypes = () => {
 
     const fetchPropertyTypes = () => 
         axios
-        .get('https://nuvolagraph.staging.oregon.platform-os.com/api/property-types.json')
+        .get('https://rcfilter.staging.oregon.platform-os.com/api/property-types.json')
         .then (res => {
             
             return  res.data.records.results

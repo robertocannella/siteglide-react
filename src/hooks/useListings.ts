@@ -8,7 +8,7 @@ const useListings = () => {
 
     const fetchListings = () => 
         axios
-        .get('https://nuvolagraph.staging.oregon.platform-os.com/api/all-listings.json')
+        .get('https://rcfilter.staging.oregon.platform-os.com/api/all-listings.json')
         .then (res => res.data.models.results as Listing[])
 
     // Using react-query gives auto retries, auto refresh, caching, 
