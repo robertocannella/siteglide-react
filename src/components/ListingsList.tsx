@@ -169,7 +169,7 @@ const ListingsList = () => {
           <h1>Results</h1>
 
             <ul className="list-group">
-            {!data.length ? <div>No Results</div> : <div></div>}
+            {!data.length ? <div>No Results. Please update search filter.</div> : <div></div>}
             {data?.map((listing: Listing) => (
                 <li key={listing.id} className="list-group-item">
                 {listing.properties.address}  | {/* Type */} {/*listing.properties.category_array[0] /*} | {/* PRICE RANGE */} ${listing.properties.webapp_field_3_3} | {/* Square Footage */}{listing.properties.webapp_field_3_2}ft | {/* Status */} Status: {listing.properties.webapp_field_3_1.map(item=><span> "{item}" </span>)}
